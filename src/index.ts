@@ -12,20 +12,23 @@ const certs: {key:Buffer, cert:Buffer} = {
     key: fs.readFileSync(env.Key)
 };
 
+// configure the server
+const fastifySettigns:any = {
+    https: certs,
+    http2: env.Http2 == "true" ? true : false,
+    logger: env.Logger == "true" ? true : false,
+}
+
 // Initialize the server
-const app = Fastify({
-    logger: false,
-    https: certs
-});
+const app = Fastify(fastifySettigns);
 
 (async() => {
-        
     // Get the port from the environment variables
     const port = env.Port;
 
     app.listen(port, (error:any) => {
         if (error) console.error(error);
-        else console.log(`Server listening on port: ${port}`);
+        else console.log(`Server running on ${JSON.stringify(app.server.address())}`);
     });
 })();
 
